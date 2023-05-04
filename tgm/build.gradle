@@ -1,0 +1,36 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow'
+}
+
+group 'ppzeff'
+version 'unspecified'
+
+
+dependencies {
+
+    implementation project(':allServicesModels')
+
+    implementation 'com.rabbitmq:amqp-client'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'com.github.pengrad:java-telegram-bot-api:6.7.0'
+
+
+    implementation "ch.qos.logback:logback-classic"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+shadowJar {
+    archiveBaseName.set('BotApp')
+    archiveVersion.set('0.1')
+    archiveClassifier.set('')
+    manifest {
+        attributes 'Main-Class': 'ppzeff.tgm.BotApp'
+    }
+}
+tasks.build.dependsOn tasks.shadowJar

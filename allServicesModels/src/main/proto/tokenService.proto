@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+
+package authentication.v1;
+
+service TokenService {
+  rpc getToken (Empty) returns (MassageResponse);
+}
+
+message MassageResponse {
+  string token = 1;
+}
+message Empty {}
+
