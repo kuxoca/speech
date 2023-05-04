@@ -1,0 +1,73 @@
+version: '2'
+
+services:
+  securing:
+    build:
+      dockerfile: ./securing/Dockerfile
+    image: speech/securing:v1
+    environment:
+      - CLIENT_ID_SBER_Access_Token=
+      - CLIENT_Secret_SBER_Access_Token=
+      - YA_FOLDER_ID=
+      - YA_OAuth=
+      - JWT_SIGNING_KEY=L8hHXsaQOUjk5rg7XPGv4eL36anlCrkMz8CJ0i/8E/0=
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.4
+  recognizeSber:
+    build:
+      dockerfile: ./recognize/Dockerfile
+    image: speech/recognizes:v1
+    environment:
+      - JWT_SIGNING_KEY=L8hHXsaQOUjk5rg7XPGv4eL36anlCrkMz8CJ0i/8E/0=
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.3
+
+  recognizeYandex:
+    build:
+      dockerfile: ./recognize/Dockerfile3
+    image: speech/recognizey:v1
+    environment:
+      - JWT_SIGNING_KEY=L8hHXsaQOUjk5rg7XPGv4eL36anlCrkMz8CJ0i/8E/0=
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.6
+
+  bot:
+    build:
+      dockerfile: ./tgm/Dockerfile
+    image: speech/bot:v1
+    environment:
+      - botToken=
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.2
+
+  rabbitmq:
+    build:
+      dockerfile: ./rabbitmq/Dockerfile
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.5
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:15672" ]
+      interval: 1s
+      timeout: 1s
+      retries: 20
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
