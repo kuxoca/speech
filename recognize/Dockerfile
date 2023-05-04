@@ -1,0 +1,6 @@
+
+FROM bellsoft/liberica-openjdk-alpine:17.0.6
+EXPOSE 8190 5672
+RUN mkdir /rec
+COPY recognize/build/libs/RecognizeServer-0.1.jar /rec/RecognizeServer-0.1.jar
+ENTRYPOINT ["java", "-jar","/rec/RecognizeServer-0.1.jar","1"]

@@ -1,3 +1,5 @@
 rootProject.name = 'speech'
 include 'tgm'
 include 'allServicesModels'
+include 'recognize'
+include 'securing'
