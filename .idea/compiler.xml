@@ -8,6 +8,10 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.24/lombok-1.18.24.jar" />
         </processorPath>
+        <module name="speech.tgm.main" />
+        <module name="speech.allServicesModels.main" />
+        <module name="speech.recognize.main" />
+        <module name="speech.securing.main" />
         <module name="speech.main" />
       </profile>
     </annotationProcessing>
