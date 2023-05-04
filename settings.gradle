@@ -1,2 +1,3 @@
 rootProject.name = 'speech'
-
+include 'tgm'
+include 'allServicesModels'
