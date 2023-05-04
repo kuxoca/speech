@@ -11,7 +11,7 @@
 
 ## Как запустить
 1. клонировать репозиторий
-2. сконфигурировать `TokenServer` и `TelegramBotServer`
+2. сконфигурировать `TokenServer` и `TelegramBotServer` в файле `docker-compose.yml`
 ```yaml
 services:
   securing:
