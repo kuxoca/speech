@@ -12,12 +12,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
-public class BotServiceImp implements AutoCloseable, BotService {
+public class BotProcessorImp implements AutoCloseable, BotProcessor {
 
     private final Connection connection;
     private final Channel channel;
 
-    public BotServiceImp() throws IOException, TimeoutException {
+    public BotProcessorImp() throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(Constants.SERVER_ADDRESS_Rabbitmq);
 

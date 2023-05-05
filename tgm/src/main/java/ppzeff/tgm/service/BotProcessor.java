@@ -1,5 +1,5 @@
 package ppzeff.tgm.service;
 
-public interface BotService {
+public interface BotProcessor {
     String sendAndGetText(byte[] bytes, String typeService);
 }

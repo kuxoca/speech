@@ -9,19 +9,20 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.GetFileResponse;
 import lombok.extern.slf4j.Slf4j;
 import ppzeff.shared.Constants;
+import ppzeff.tgm.service.BotProcessor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 @Slf4j
-public class BotProcessor {
+public class BotService {
     private final TelegramBot bot;
-    private final ppzeff.tgm.service.BotService botService;
+    private final BotProcessor botProcessor;
 
-    public BotProcessor(TelegramBot bot, ppzeff.tgm.service.BotService botService) {
+    public BotService(TelegramBot bot, BotProcessor botProcessor) {
         this.bot = bot;
-        this.botService = botService;
+        this.botProcessor = botProcessor;
     }
 
     public void start() {
@@ -43,7 +44,7 @@ public class BotProcessor {
                 Voice voice = message.voice();
                 if (voice != null) {
                     byte[] byteFromVoice = getByteFromVoice(voice);
-                    String recognizeText = botService.sendAndGetText(byteFromVoice, getTypeService(message.from().id()));
+                    String recognizeText = botProcessor.sendAndGetText(byteFromVoice, getTypeService(message.from().id()));
                     replayRecognizeText(recognizeText, message);
                 }
             }

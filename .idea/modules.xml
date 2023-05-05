@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/allServicesModels/speech.allServicesModels.main.iml" filepath="$PROJECT_DIR$/.idea/modules/allServicesModels/speech.allServicesModels.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/recognize/speech.recognize.main.iml" filepath="$PROJECT_DIR$/.idea/modules/recognize/speech.recognize.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/securing/speech.securing.main.iml" filepath="$PROJECT_DIR$/.idea/modules/securing/speech.securing.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tgm/speech.tgm.main.iml" filepath="$PROJECT_DIR$/.idea/modules/tgm/speech.tgm.main.iml" />
     </modules>
   </component>
 </project>
