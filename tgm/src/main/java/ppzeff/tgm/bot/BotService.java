@@ -2,94 +2,135 @@ package ppzeff.tgm.bot;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.*;
+import com.pengrad.telegrambot.model.BotCommand;
+import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.GetFileResponse;
+import com.pengrad.telegrambot.request.SetMyCommands;
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.shared.Constants;
-import ppzeff.tgm.service.BotProcessor;
+import ppzeff.tgm.bot.listener.factory.AbstractListenerFactory;
+import ppzeff.tgm.bot.listener.AbstractMessageListener;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 public class BotService {
+    private static BotService instance;
     private final TelegramBot bot;
-    private final BotProcessor botProcessor;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private final Map<Long, List<AbstractMessageListener>> builtListener = Collections.synchronizedMap(new WeakHashMap<>());
+    private final List<AbstractListenerFactory> listenerFactories = Collections.synchronizedList(new ArrayList<>());
 
-    public BotService(TelegramBot bot, BotProcessor botProcessor) {
-        this.bot = bot;
-        this.botProcessor = botProcessor;
-    }
+    private BotService() {
+        bot = new TelegramBot(System.getenv("BOT_TOKEN"));
 
-    public void start() {
-        log.info("Wait message... https://t.me/dlfyt_bot");
-        bot.setUpdatesListener((updates) -> {
-            for (Update update : updates) {
-                new Thread(() -> {
-                    processor(update);
-                }).start();
+        bot.setUpdatesListener(updates -> {
+            try {
+                for (Update update : updates) {
+                    executorService.submit(() -> processUpdate(update));
+                }
+            } catch (RuntimeException e) {
+                log.error("ERROR", e);
+                throw new RuntimeException();
             }
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });
     }
 
-    private void processor(Update update) {
+    public void registerFactories(AbstractListenerFactory... factories) {
+        List<AbstractListenerFactory> factory = Arrays.stream(factories).toList();
+        registerListenerFactory(factory);
+        configBotCommand(factory);
+        log.info("config bot finish");
+    }
+
+
+    private void processUpdate(Update update) {
         Message message = update.message();
+        if (message == null) {
+            return;
+        }
+        if (message.text() != null &&
+                (message.text().equals("/help") || message.text().equals("/start"))) {
+            log.info("Invoking {}", message.text());
+            sendHelpMessage(message);
+            return;
+        }
+        getListeners(message).stream()
+                .filter(l -> l.invocation(message))
+                .forEach(l -> l.onMessage(message));
+    }
+
+    private void sendHelpMessage(Message message) {
+        var helpBuilder = new StringBuilder();
+        helpBuilder.append("<b>Available commands:</b>");
+        listenerFactories.forEach(f -> {
+            helpBuilder
+                    .append("\n")
+                    .append("<b>")
+                    .append(f.getCommand())
+                    .append("</b>")
+                    .append("\n")
+                    .append("<i>").append(f.getInfo()).append("</i>");
+        });
+        helpBuilder
+                .append("\n")
+                .append("<b>/help</b>\n<i>показать это сообщение</i>");
+        var msg = new SendMessage(message.chat().id(), helpBuilder.toString());
+        msg.parseMode(ParseMode.HTML);
+        bot.execute(msg);
+    }
+
+    private List<AbstractMessageListener> getListeners(Message message) {
+        if (builtListener.containsKey(message.chat().id())) {
+            return builtListener.get(message.chat().id());
+        }
+
+        var messageListeners = new ArrayList<AbstractMessageListener>();
+        for (var factory : listenerFactories) {
+            var handler = factory.build(message.chat().id());
+            messageListeners.add(handler);
+        }
+        builtListener.put(message.chat().id(), messageListeners);
+        return messageListeners;
+    }
+
+    private void configBotCommand(List<AbstractListenerFactory> factory) {
+        List<BotCommand> commands = new ArrayList<>();
+        commands.add(new BotCommand("/start", "начать работу"));
+        commands.add(new BotCommand("/help", "получить помощь по работе с ботом"));
+
+        factory.stream().filter(AbstractListenerFactory::flag).forEach(f -> {
+            commands.add(new BotCommand(f.getCommand(), f.getInfo()));
+            log.info("command {}", f.getCommand());
+        });
+
+        bot.execute(new SetMyCommands(commands.toArray(new BotCommand[0])));
+    }
+
+    public void registerListenerFactory(List<AbstractListenerFactory> factories) {
+        factories.forEach(factory -> {
+            factory.setBot(bot);
+            listenerFactories.add(factory);
+            log.info("add listener factory: '{}' - {}", factory.getCommand(), factory.getInfo());
+        });
+    }
+
+    public void deleteListener(AbstractListenerFactory factory) {
         try {
-            if (message != null) {
-                Voice voice = message.voice();
-                if (voice != null) {
-                    byte[] byteFromVoice = getByteFromVoice(voice);
-                    String recognizeText = botProcessor.sendAndGetText(byteFromVoice, getTypeService(message.from().id()));
-                    replayRecognizeText(recognizeText, message);
-                }
-            }
+            listenerFactories.remove(factory);
         } catch (RuntimeException e) {
-            bot.execute(
-                    new SendMessage(
-                            message.chat().id(),
-                            "Произошла ошибка"
-                    )
-                            .replyToMessageId(message.messageId())
-            );
+//
         }
     }
 
-    private void replayRecognizeText(String text, Message message) {
-        bot.execute(
-                new SendMessage(
-                        message.chat().id(),
-                        text
-                )
-                        .disableNotification(true)
-                        .parseMode(ParseMode.HTML)
-                        .replyToMessageId(message.messageId())
-        );
-    }
-
-    private String getTypeService(Long id) {
-        if (id == 189632375L) {
-            return Constants.ROUTING_KEY_SBER;
-        } else if (id == 189632385L) {
-            return Constants.ROUTING_KEY_YANDEX;
+    public static BotService getInstance() {
+        if (instance == null) {
+            instance = new BotService();
         }
-        return Constants.ROUTING_KEY_SBER;
-    }
-
-    private byte[] getByteFromVoice(Voice voice) {
-        GetFile getFile = new GetFile(voice.fileId());
-        GetFileResponse getFileResponse = bot.execute(getFile);
-        File file = getFileResponse.file();
-        String fullPath = bot.getFullFilePath(file);
-
-        try (InputStream inputStream = new URL(fullPath).openStream()) {
-            return inputStream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return instance;
     }
 }
