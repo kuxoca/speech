@@ -9,6 +9,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.GetFileResponse;
 import lombok.extern.slf4j.Slf4j;
 import ppzeff.tgm.service.UserDetailService;
+import ppzeff.tgm.service.UserDetailServiceImp;
 import ppzeff.tgm.service.BotProcessor;
 import ppzeff.tgm.service.BotProcessorImp;
 
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 public class VoiceMessageListener extends AbstractMessageListener {
-    UserDetailService userDetailService = UserDetailService.getInstance();
+    UserDetailService userDetailService = UserDetailServiceImp.getInstance();
     private final BotProcessor botProcessor;
 
     @Override

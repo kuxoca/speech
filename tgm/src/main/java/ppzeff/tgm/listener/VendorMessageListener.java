@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.Message;
 import lombok.extern.slf4j.Slf4j;
 import ppzeff.tgm.dto.UserDetail;
 import ppzeff.tgm.service.UserDetailService;
+import ppzeff.tgm.service.UserDetailServiceImp;
 
 @Slf4j
 public class VendorMessageListener extends AbstractMessageListener {
@@ -27,7 +28,7 @@ public class VendorMessageListener extends AbstractMessageListener {
 
     public VendorMessageListener(TelegramBot bot, long chatId) {
         super(bot, chatId);
-        this.userDetailService = UserDetailService.getInstance();
+        this.userDetailService = UserDetailServiceImp.getInstance();
     }
 
     @Override
