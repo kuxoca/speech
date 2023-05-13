@@ -1,4 +1,4 @@
-package ppzeff.tgm.bot;
+package ppzeff.tgm.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
@@ -9,22 +9,22 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.tgm.bot.listener.factory.AbstractListenerFactory;
-import ppzeff.tgm.bot.listener.AbstractMessageListener;
+import ppzeff.tgm.listener.factory.AbstractListenerFactory;
+import ppzeff.tgm.listener.AbstractMessageListener;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Slf4j
-public class BotService {
+public class BotServiceImp implements BotService {
     private static BotService instance;
     private final TelegramBot bot;
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     private final Map<Long, List<AbstractMessageListener>> builtListener = Collections.synchronizedMap(new WeakHashMap<>());
     private final List<AbstractListenerFactory> listenerFactories = Collections.synchronizedList(new ArrayList<>());
 
-    private BotService() {
+    private BotServiceImp() {
         bot = new TelegramBot(System.getenv("BOT_TOKEN"));
 
         bot.setUpdatesListener(updates -> {
@@ -66,8 +66,12 @@ public class BotService {
 
     private void sendHelpMessage(Message message) {
         var helpBuilder = new StringBuilder();
-        helpBuilder.append("<b>Available commands:</b>");
-        listenerFactories.forEach(f -> {
+        helpBuilder.append("<b>Доступные каманды:</b>");
+        helpBuilder
+                .append("\n<b>onGet voice message</b>")
+                .append("\n<i>при получении голосового сообщения в ответ отправляется текстовая транскрипция</i>");
+
+        listenerFactories.stream().filter(AbstractListenerFactory::flag).forEach(f -> {
             helpBuilder
                     .append("\n")
                     .append("<b>")
@@ -108,10 +112,11 @@ public class BotService {
             log.info("command {}", f.getCommand());
         });
 
-        bot.execute(new SetMyCommands(commands.toArray(new BotCommand[0])));
+        boolean ok = bot.execute(new SetMyCommands(commands.toArray(new BotCommand[0]))).isOk();
+        log.info("set bot command {}", ok);
     }
 
-    public void registerListenerFactory(List<AbstractListenerFactory> factories) {
+    private void registerListenerFactory(List<AbstractListenerFactory> factories) {
         factories.forEach(factory -> {
             factory.setBot(bot);
             listenerFactories.add(factory);
@@ -119,6 +124,7 @@ public class BotService {
         });
     }
 
+    @Override
     public void deleteListener(AbstractListenerFactory factory) {
         try {
             listenerFactories.remove(factory);
@@ -129,7 +135,7 @@ public class BotService {
 
     public static BotService getInstance() {
         if (instance == null) {
-            instance = new BotService();
+            instance = new BotServiceImp();
         }
         return instance;
     }

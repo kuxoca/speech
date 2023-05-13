@@ -1,21 +1,19 @@
 package ppzeff.tgm;
 
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.tgm.bot.BotService;
-import ppzeff.tgm.bot.listener.factory.SettingListenerFactory;
-import ppzeff.tgm.bot.listener.factory.VendorListenerFactory;
-import ppzeff.tgm.bot.listener.factory.VoiceListenerFactory;
-
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import ppzeff.tgm.service.BotServiceImp;
+import ppzeff.tgm.listener.factory.SettingListenerFactory;
+import ppzeff.tgm.listener.factory.VendorListenerFactory;
+import ppzeff.tgm.listener.factory.VoiceListenerFactory;
+import ppzeff.tgm.service.BotService;
 
 @Slf4j
 public class BotApp {
     public static void main(String[] args) {
-        BotService botService;
+        BotService botServiceImp;
         try {
-            botService = BotService.getInstance();
-            botService.registerFactories(
+            botServiceImp = BotServiceImp.getInstance();
+            botServiceImp.registerFactories(
                     new VoiceListenerFactory(),
                     new SettingListenerFactory(),
                     new VendorListenerFactory()

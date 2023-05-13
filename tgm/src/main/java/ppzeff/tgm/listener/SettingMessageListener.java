@@ -1,4 +1,4 @@
-package ppzeff.tgm.bot.listener;
+package ppzeff.tgm.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;

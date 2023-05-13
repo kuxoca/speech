@@ -1,4 +1,4 @@
-package ppzeff.tgm.bot.dto;
+package ppzeff.tgm.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

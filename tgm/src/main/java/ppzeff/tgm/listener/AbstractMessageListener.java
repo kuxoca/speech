@@ -1,8 +1,9 @@
-package ppzeff.tgm.bot.listener;
+package ppzeff.tgm.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
+import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public abstract class AbstractMessageListener {
         return bot.execute(newMessage).isOk();
     }
 
-    boolean sendMessage(SendMessage request) {
+    boolean sendMessage(BaseRequest request) {
         return bot.execute(request).isOk();
     }
 

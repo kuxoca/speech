@@ -17,13 +17,22 @@ public class BotProcessorImp implements AutoCloseable, BotProcessor {
     private final Connection connection;
     private final Channel channel;
 
-    public BotProcessorImp() throws IOException, TimeoutException {
+    public BotProcessorImp() throws TimeoutException, IOException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(Constants.SERVER_ADDRESS_Rabbitmq);
 
-        connection = factory.newConnection();
-        channel = connection.createChannel();
-        channel.exchangeDeclare(Constants.EXCHANGE_NAME, BuiltinExchangeType.DIRECT);
+        try {
+            connection = factory.newConnection();
+            channel = connection.createChannel();
+            channel.exchangeDeclare(Constants.EXCHANGE_NAME, BuiltinExchangeType.DIRECT);
+        } catch (IOException e) {
+            log.error("connection ERROR ", e);
+            throw new IOException();
+        } catch (TimeoutException e) {
+            log.error("connection ERROR ", e);
+            throw new TimeoutException();
+
+        }
     }
 
     @Override

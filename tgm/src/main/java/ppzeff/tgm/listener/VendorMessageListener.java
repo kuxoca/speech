@@ -1,10 +1,10 @@
-package ppzeff.tgm.bot.listener;
+package ppzeff.tgm.listener;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.tgm.bot.dto.UserDetail;
-import ppzeff.tgm.bot.service.UserDetailService;
+import ppzeff.tgm.dto.UserDetail;
+import ppzeff.tgm.service.UserDetailService;
 
 @Slf4j
 public class VendorMessageListener extends AbstractMessageListener {

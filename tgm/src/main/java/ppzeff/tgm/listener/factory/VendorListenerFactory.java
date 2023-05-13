@@ -1,8 +1,8 @@
-package ppzeff.tgm.bot.listener.factory;
+package ppzeff.tgm.listener.factory;
 
 
-import ppzeff.tgm.bot.listener.AbstractMessageListener;
-import ppzeff.tgm.bot.listener.VendorMessageListener;
+import ppzeff.tgm.listener.AbstractMessageListener;
+import ppzeff.tgm.listener.VendorMessageListener;
 
 public class VendorListenerFactory extends AbstractListenerFactory{
     @Override

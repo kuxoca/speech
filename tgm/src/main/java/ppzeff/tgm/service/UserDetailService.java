@@ -1,14 +1,17 @@
-package ppzeff.tgm.bot.service;
+package ppzeff.tgm.service;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import ppzeff.tgm.bot.dto.UserDetail;
+import lombok.extern.slf4j.Slf4j;
+import ppzeff.shared.Constants;
+import ppzeff.tgm.dto.UserDetail;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDetailService {
@@ -20,6 +23,11 @@ public class UserDetailService {
     }
 
     public String getVendorByUserId(Long id) {
+
+        if (!userDetailMap.containsKey(id)) {
+//            log.info("default vendor {}", Constants.ROUTING_KEY_SBER);
+            return Constants.ROUTING_KEY_SBER;
+        }
         return userDetailMap.get(id).getVendor();
     }
 

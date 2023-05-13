@@ -1,10 +1,10 @@
-package ppzeff.tgm.bot.listener.factory;
+package ppzeff.tgm.listener.factory;
 
 import com.pengrad.telegrambot.TelegramBot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.tgm.bot.listener.AbstractMessageListener;
+import ppzeff.tgm.listener.AbstractMessageListener;
 
 @Getter
 @Setter

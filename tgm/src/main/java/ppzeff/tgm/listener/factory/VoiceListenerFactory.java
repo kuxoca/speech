@@ -1,11 +1,10 @@
-package ppzeff.tgm.bot.listener.factory;
+package ppzeff.tgm.listener.factory;
 
 
-import ppzeff.tgm.bot.listener.AbstractMessageListener;
-import ppzeff.tgm.bot.listener.VoiceMessageListener;
+import ppzeff.tgm.listener.AbstractMessageListener;
+import ppzeff.tgm.listener.VoiceMessageListener;
 
 public class VoiceListenerFactory extends AbstractListenerFactory{
-
     @Override
     public AbstractMessageListener build(long chatId) {
         return new VoiceMessageListener(getBot(), chatId);
