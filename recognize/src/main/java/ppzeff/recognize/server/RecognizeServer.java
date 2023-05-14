@@ -4,9 +4,9 @@ package ppzeff.recognize.server;
 
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
-import ppzeff.recognize.service.Recognize;
-import ppzeff.recognize.service.RecognizeSber;
-import ppzeff.recognize.service.RecognizeYandex;
+import ppzeff.recognize.service.RecognizeService;
+import ppzeff.recognize.service.RecognizeServiceSber;
+import ppzeff.recognize.service.RecognizeServiceYandex;
 import ppzeff.shared.Constants;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RecognizeServer {
 
     public void start(String[] argv) throws Exception {
-        Recognize rec = null;
+        RecognizeService rec = null;
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(Constants.SERVER_ADDRESS_Rabbitmq);
@@ -26,7 +26,7 @@ public class RecognizeServer {
         String queueName = channel.queueDeclare().getQueue();
 
         if (argv.length < 1) {
-            rec = new RecognizeSber();
+            rec = new RecognizeServiceSber();
             channel.queueBind(queueName, Constants.EXCHANGE_NAME, Constants.ROUTING_KEY_SBER);
             log.info("DEFAULT ROUTING_KEY: {}", Constants.ROUTING_KEY_SBER);
         } else {
@@ -34,10 +34,10 @@ public class RecognizeServer {
             for (String severity : argv) {
                 if (severity.equals(Constants.ROUTING_KEY_SBER) || severity.equals("1")) {
                     channel.queueBind(queueName, Constants.EXCHANGE_NAME, Constants.ROUTING_KEY_SBER);
-                    rec = new RecognizeSber();
+                    rec = new RecognizeServiceSber();
                     log.info("ROUTING_KEY: {}", Constants.ROUTING_KEY_SBER);
                 } else if (severity.equals(Constants.ROUTING_KEY_YANDEX) || severity.equals("2")) {
-                    rec = new RecognizeYandex();
+                    rec = new RecognizeServiceYandex();
                     channel.queueBind(queueName, Constants.EXCHANGE_NAME, Constants.ROUTING_KEY_YANDEX);
                     log.info("ROUTING_KEY: {}", Constants.ROUTING_KEY_YANDEX);
                 }
@@ -50,7 +50,7 @@ public class RecognizeServer {
 
         AtomicInteger i = new AtomicInteger(1);
 
-        Recognize finalRec = rec;
+        RecognizeService finalRec = rec;
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             log.info("get message # {}", i.getAndIncrement());
             AMQP.BasicProperties replyProps = new AMQP.BasicProperties

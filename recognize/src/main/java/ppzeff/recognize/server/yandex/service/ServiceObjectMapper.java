@@ -1,4 +1,4 @@
-package ppzeff.recognize.server.yandex.speech;
+package ppzeff.recognize.server.yandex.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

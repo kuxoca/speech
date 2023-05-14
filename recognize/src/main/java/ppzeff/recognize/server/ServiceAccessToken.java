@@ -1,4 +1,4 @@
-package ppzeff.recognize.server.sber.service;
+package ppzeff.recognize.server;
 
 public interface ServiceAccessToken {
     String getAccessToken();

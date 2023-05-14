@@ -1,4 +1,4 @@
-package ppzeff.recognize.server.yandex.speech;
+package ppzeff.recognize.server.yandex.service;
 
 import lombok.extern.slf4j.Slf4j;
 

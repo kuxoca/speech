@@ -6,6 +6,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import ppzeff.recognize.server.ServiceAccessToken;
 import ppzeff.recognize.server.yandex.config.BearerTokenYandex;
 import ppzeff.shared.Constants;
 import ppzeff.shared.ServerType;
